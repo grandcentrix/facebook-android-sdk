@@ -57,11 +57,13 @@ public class FbDialog extends Dialog {
 	private ImageView mCrossImage;
 	private WebView mWebView;
 	private FrameLayout mContent;
+	private Context mContext;
 
 	public FbDialog(Context context, String url, DialogListener listener) {
 		super(context, android.R.style.Theme_Translucent_NoTitleBar);
 		mUrl = url;
 		mListener = listener;
+		mContext = context;
 	}
 
 	@Override
@@ -69,7 +71,7 @@ public class FbDialog extends Dialog {
 		super.onCreate(savedInstanceState);
 		mSpinner = new ProgressDialog(getContext());
 		mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		mSpinner.setMessage("Loading...");
+		mSpinner.setMessage(mContext.getString(R.string.dlg_loading));
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		mContent = new FrameLayout(getContext());
@@ -139,7 +141,14 @@ public class FbDialog extends Dialog {
 
 		webViewContainer.setPadding(margin, margin, margin, margin);
 		webViewContainer.addView(mWebView);
+		webViewContainer
+				.setBackgroundResource(android.R.drawable.alert_dark_frame);
 		mContent.addView(webViewContainer);
+		/*
+		 * mContent should not be visible while webview is loading make it
+		 * visible only after webview has fully loaded
+		 */
+		mContent.setVisibility(View.INVISIBLE);
 	}
 
 	private class FbWebViewClient extends WebViewClient {
@@ -201,9 +210,10 @@ public class FbDialog extends Dialog {
 			mSpinner.dismiss();
 			/*
 			 * Once webview is fully loaded, set the mContent background to be
-			 * transparent and make visible the 'x' image.
+			 * transparent and make visible the 'x' image and mContent.
 			 */
 			mContent.setBackgroundColor(Color.TRANSPARENT);
+			mContent.setVisibility(View.VISIBLE);
 			mWebView.setVisibility(View.VISIBLE);
 			mCrossImage.setVisibility(View.VISIBLE);
 		}
