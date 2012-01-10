@@ -84,7 +84,7 @@ public class FbDialog extends Dialog {
 		createCrossImage();
 
 		/*
-		 * Now we know 'x' drawable width and height, layout the webivew and add
+		 * Now we know 'x' drawable width and height, layout the webview and add
 		 * it the mContent layout
 		 */
 		int crossWidth = mCrossImage.getDrawable().getIntrinsicWidth();
@@ -139,6 +139,9 @@ public class FbDialog extends Dialog {
 		mWebView.setLayoutParams(FILL);
 		mWebView.setVisibility(View.INVISIBLE);
 
+		int expandPx = margin * 2 - MARGIN; // dirty :<
+		webViewContainer.setLayoutParams(new LayoutParams(dialogWidth
+				+ expandPx, dialogHeight + expandPx));
 		webViewContainer.setPadding(margin, margin, margin, margin);
 		webViewContainer.addView(mWebView);
 		webViewContainer
