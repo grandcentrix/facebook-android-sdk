@@ -57,11 +57,13 @@ public class FbDialog extends Dialog {
     private ImageView mCrossImage;
     private WebView mWebView;
     private FrameLayout mContent;
+    private Context mContext;
 
     public FbDialog(Context context, String url, DialogListener listener) {
         super(context, android.R.style.Theme_Translucent_NoTitleBar);
         mUrl = url;
         mListener = listener;
+        mContext = context;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class FbDialog extends Dialog {
         super.onCreate(savedInstanceState);
         mSpinner = new ProgressDialog(getContext());
         mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mSpinner.setMessage("Loading...");
+        mSpinner.setMessage(mContext.getString(R.string.dlg_loading));
         
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         mContent = new FrameLayout(getContext());
