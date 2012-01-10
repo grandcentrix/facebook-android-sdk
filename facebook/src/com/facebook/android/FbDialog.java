@@ -124,7 +124,12 @@ public class FbDialog extends Dialog {
         
         webViewContainer.setPadding(margin, margin, margin, margin);
         webViewContainer.addView(mWebView);
+        webViewContainer.setBackgroundResource(android.R.drawable.alert_dark_frame);
         mContent.addView(webViewContainer);
+        /* mContent should not be visible while webview is loading
+         * make it visible only after webview has fully loaded
+        */
+        mContent.setVisibility(View.INVISIBLE);
     }
 
     private class FbWebViewClient extends WebViewClient {
@@ -186,9 +191,10 @@ public class FbDialog extends Dialog {
             mSpinner.dismiss();
             /* 
              * Once webview is fully loaded, set the mContent background to be transparent
-             * and make visible the 'x' image. 
+             * and make visible the 'x' image and mContent. 
              */
             mContent.setBackgroundColor(Color.TRANSPARENT);
+            mContent.setVisibility(View.VISIBLE);
             mWebView.setVisibility(View.VISIBLE);
             mCrossImage.setVisibility(View.VISIBLE);
         }
