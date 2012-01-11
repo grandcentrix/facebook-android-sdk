@@ -57,13 +57,13 @@ public class FbDialog extends Dialog {
 	private ImageView mCrossImage;
 	private WebView mWebView;
 	private FrameLayout mContent;
-	private Context mContext;
+	private int mDisplayWidth;
+	private int mDisplayHeight;
 
 	public FbDialog(Context context, String url, DialogListener listener) {
 		super(context, android.R.style.Theme_Translucent_NoTitleBar);
 		mUrl = url;
 		mListener = listener;
-		mContext = context;
 	}
 
 	@Override
@@ -71,10 +71,13 @@ public class FbDialog extends Dialog {
 		super.onCreate(savedInstanceState);
 		mSpinner = new ProgressDialog(getContext());
 		mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		mSpinner.setMessage(mContext.getString(R.string.dlg_loading));
+		mSpinner.setMessage(getContext().getString(R.string.dlg_loading));
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		mContent = new FrameLayout(getContext());
+
+		mDisplayWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+		mDisplayHeight = getContext().getResources().getDisplayMetrics().heightPixels;
 
 		/*
 		 * Create the 'x' image, but don't add to the mContent layout yet at
@@ -93,10 +96,8 @@ public class FbDialog extends Dialog {
 		/*
 		 * Setting the FrameLayout using padding in the middle of the screen.
 		 */
-		int displayWidth = getContext().getResources().getDisplayMetrics().widthPixels;
-		int displayHeight = getContext().getResources().getDisplayMetrics().heightPixels;
-		mContent.setPadding(((displayWidth - dialogWidth) / 2),
-				((displayHeight - dialogHeight) / 2), 0, 0);
+		mContent.setPadding(((mDisplayWidth - dialogWidth) / 2),
+				((mDisplayHeight - dialogHeight) / 2), 0, 0);
 
 		/*
 		 * Finally add the 'x' image to the mContent layout and add mContent to
@@ -136,12 +137,22 @@ public class FbDialog extends Dialog {
 		mWebView.setWebViewClient(new FbDialog.FbWebViewClient());
 		mWebView.getSettings().setJavaScriptEnabled(true);
 		mWebView.loadUrl(mUrl);
-		mWebView.setLayoutParams(FILL);
+		// If display height is same as dialog height reduce dialog size
+		LayoutParams lParams = (mDisplayHeight == dialogHeight) ? new LayoutParams(
+				dialogWidth, dialogHeight - 60) : FILL;
+		mWebView.setLayoutParams(lParams);
 		mWebView.setVisibility(View.INVISIBLE);
 
 		int expandPx = margin * 2 - MARGIN; // dirty :<
-		webViewContainer.setLayoutParams(new LayoutParams(dialogWidth
-				+ expandPx, dialogHeight + expandPx));
+		// If display height is same as dialog height reduce dialog size
+		if (mDisplayHeight == dialogHeight) {
+			webViewContainer.setLayoutParams(new LayoutParams(dialogWidth
+					+ expandPx, dialogHeight + expandPx - 60));
+		} else {
+			webViewContainer.setLayoutParams(new LayoutParams(dialogWidth
+					+ expandPx, dialogHeight + expandPx));
+		}
+
 		webViewContainer.setPadding(margin, margin, margin, margin);
 		webViewContainer.addView(mWebView);
 		webViewContainer
