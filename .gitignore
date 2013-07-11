@@ -17,3 +17,7 @@ examples/stream/gen/
 examples/simple/gen/
 tests/bin
 tests/gen
+
+# Gradle & Android Studio
+facebook/build/
+*.iml
